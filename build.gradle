@@ -1,0 +1,76 @@
+plugins {
+  id "java"
+  id "application"
+  id "idea"
+  id "pl.allegro.tech.build.axion-release" version "1.10.2"
+  id "com.gorylenko.gradle-git-properties" version "2.2.0"
+  id "com.bmuschko.docker-remote-api" version "5.2.0"
+}
+
+group 'com.zzizily'
+description = "template java application"
+version = scmVersion.version
+
+sourceCompatibility = compatibilityVersion
+targetCompatibility = compatibilityVersion
+[compileJava, compileTestJava]*.options*.encoding = encoding
+
+configurations {
+  developmentOnly
+  runtimeClasspath {
+    extendsFrom developmentOnly
+  }
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+}
+
+application {
+  mainClassName = "com.zzizily.Main"
+}
+
+wrapper {
+  gradleVersion = gradleVersion
+  distributionType = Wrapper.DistributionType.BIN
+}
+
+repositories {
+  mavenCentral()
+  jcenter()
+  maven { url 'https://jitpack.io' }
+}
+
+gitProperties {
+  dateFormat = "yyyy-MM-dd HH:mm:ss"
+  dateFormatTimeZone = "Asia/Seoul"
+}
+
+//docker {
+//  springBootApplication {
+//    baseImage = "adoptopenjdk/openjdk11:jre-11.0.4_11-alpine"
+//    maintainer = "SeokYoung.Kim"
+//    ports = [port.toInteger()]
+//    tag = "${registryUrl}/"+group+"/"+project.name+":"+version
+//    jvmArgs = applicationDefaultJvmArgs
+//  }
+//}
+
+jar {
+  enabled = true
+  manifest {
+    attributes(
+      "Implementation-Title": "${project.name}",
+      "Implementation-Version": "${project.version}"
+    )
+  }
+}
+
+test {
+  useJUnitPlatform()
+  //개발 시에는 test OFF source 로 직접 호출은 가능 gradle build 시에만 무시
+  enabled = false
+}
+
+dependencies {
+  implementation 'com.github.deuxksy:template-java-library:develop-SNAPSHOT'
+}
